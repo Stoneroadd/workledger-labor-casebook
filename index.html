@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f4ef">
+  <meta name="description" content="Demo sintética para organizar antecedentes laborales y revisar remuneraciones con cálculos trazables.">
+  <title>WorkLedger · Cuaderno laboral</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#inicio" aria-label="WorkLedger inicio"><span class="brand-mark">W</span><span>workledger<small>CUADERNO LABORAL</small></span></a>
+    <div class="top-meta"><span class="demo-pill"><i></i> DEMO SINTÉTICA</span><button class="avatar" aria-label="Perfil de demostración">DM</button></div>
+  </header>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Navegación principal">
+      <div class="case-switch"><span class="case-icon">↗</span><div><small>EXPEDIENTE ACTIVO</small><strong>CASO DEMO · 2024</strong></div><span class="chevron">⌄</span></div>
+      <nav>
+        <a class="nav-link active" href="#inicio"><span>◫</span>Resumen</a>
+        <a class="nav-link" href="#remuneraciones"><span>＄</span>Remuneraciones</a>
+        <a class="nav-link" href="#antecedentes"><span>▤</span>Antecedentes <b id="doc-nav-count">0</b></a>
+        <a class="nav-link" href="#cronologia"><span>◷</span>Cronología</a>
+        <a class="nav-link" href="#referencias"><span>§</span>Referencias legales</a>
+      </nav>
+      <div class="sidebar-bottom"><div class="privacy-icon">⌑</div><strong>Tu información queda<br>en este navegador</strong><p>Este prototipo guarda datos en localStorage. No subas información real a una demo pública.</p><button id="export-json" class="side-action">Exportar copia JSON <span>↗</span></button></div>
+    </aside>
+    <main id="inicio" class="main-content">
+      <div class="page-heading"><div><div class="eyebrow">ESPACIO DE TRABAJO <span>/</span> EXPEDIENTE SINTÉTICO</div><h1>Resumen laboral</h1><p class="subtitle">Ordena tus registros, compara montos y conserva el origen de cada dato.</p></div><button class="button primary" id="add-payment-top"><span>＋</span> Añadir periodo</button></div>
+      <section class="notice" aria-label="Aviso de alcance"><span class="notice-symbol">i</span><p><strong>Datos de ejemplo.</strong> No es asesoría jurídica ni determina una deuda o si corresponde demandar. Reemplaza los datos solo en una instalación privada y revisa cualquier plazo con una persona profesional.</p><button aria-label="Cerrar aviso" id="dismiss-notice">×</button></section>
+      <section class="stat-grid" aria-label="Resumen numérico">
+        <article class="stat-card"><div class="stat-label">BRUTO REGISTRADO <span class="info-dot" title="Suma de remuneraciones brutas ingresadas.">i</span></div><div class="stat-value" id="gross-total">—</div><div class="stat-foot"><span class="status-dot green"></span> Según registros guardados</div><div class="stat-spark spark-green" aria-hidden="true">▁▃▂▅▄▆▅█</div></article>
+        <article class="stat-card"><div class="stat-label">LÍQUIDO PAGADO</div><div class="stat-value" id="net-total">—</div><div class="stat-foot">Monto líquido declarado por periodo</div><div class="stat-spark spark-blue" aria-hidden="true">▂▃▁▄▅▄▆█</div></article>
+        <article class="stat-card"><div class="stat-label">DIFERENCIA DOCUMENTAL</div><div class="stat-value" id="variance-total">—</div><div class="stat-foot">Contrato de referencia − bruto registrado</div><div class="stat-spark spark-orange" aria-hidden="true">▂▂▄▃▅▄▆▅</div></article>
+        <article class="stat-card"><div class="stat-label">PERIODOS CON RESPALDO</div><div class="stat-value" id="supported-count">—</div><div class="stat-foot" id="coverage-label">Registros con documento vinculado</div><div class="stat-progress"><span id="coverage-bar"></span></div></article>
+      </section>
+      <section class="panel chart-panel" id="remuneraciones">
+        <div class="panel-heading"><div><div class="eyebrow">HISTORIAL</div><h2>Remuneración por periodo</h2></div><div class="legend"><span><i class="legend-bruto"></i>Bruto registrado</span><span><i class="legend-contract"></i>Base contrato (referencia)</span><select id="period-filter" aria-label="Filtrar periodos"><option value="all">Todos los periodos</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option></select></div></div>
+        <div class="chart-wrap"><div class="y-labels"><span>$2,0 M</span><span>$1,5 M</span><span>$1,0 M</span><span>$0,5 M</span><span>$0</span></div><div class="chart-area"><div class="grid-lines"><i></i><i></i><i></i><i></i><i></i></div><div class="bars" id="salary-chart" role="img" aria-label="Gráfico de remuneraciones"></div></div></div>
+        <div class="chart-caption"><span id="chart-caption-text">Compara datos ingresados. La diferencia no constituye deuda determinada.</span><button class="text-button" id="export-csv">Descargar CSV <span>↗</span></button></div>
+      </section>
+      <section class="panel table-panel">
+        <div class="panel-heading"><div><div class="eyebrow">DETALLE</div><h2>Periodos registrados</h2></div><button class="button secondary" id="add-payment-table">＋ Agregar</button></div>
+        <div class="table-scroll"><table><thead><tr><th>PERIODO <span>↕</span></th><th>BRUTO</th><th>LÍQUIDO PAGADO</th><th>CONTRATO REF.</th><th>DIFERENCIA*</th><th>RESPALDO</th><th></th></tr></thead><tbody id="payments-body"></tbody></table></div>
+        <div class="table-foot">* Diferencia aritmética entre la base contractual de referencia y el bruto registrado. Puede no comparar conceptos equivalentes.</div>
+      </section>
+      <div class="lower-grid">
+        <section class="panel evidence-panel" id="antecedentes"><div class="panel-heading"><div><div class="eyebrow">FUENTES</div><h2>Antecedentes</h2></div><button class="icon-button" id="add-doc" aria-label="Añadir antecedente">＋</button></div><div class="evidence-list" id="evidence-list"></div><div class="panel-bottom"><button class="text-button" id="manage-docs">Gestionar antecedentes <span>→</span></button></div></section>
+        <section class="panel timeline-panel" id="cronologia"><div class="panel-heading"><div><div class="eyebrow">REGISTRO DE EVENTOS</div><h2>Cronología</h2></div><button class="icon-button" id="add-event" aria-label="Añadir evento">＋</button></div><div class="timeline-list" id="timeline-list"></div><div class="panel-bottom"><button class="text-button" id="more-events">Ver todos los eventos <span>→</span></button></div></section>
+      </div>
+      <section class="legal-strip" id="referencias"><div class="legal-icon">§</div><div><div class="eyebrow">REFERENCIAS · CHILE</div><h2>Consulta la fuente antes de tomar decisiones</h2><p>La normativa puede cambiar y su aplicación depende de los hechos, documentos y plazos de cada caso.</p></div><a class="button secondary" href="https://www.bcn.cl/leychile/navegar?buscar=c%C3%B3digo%2Bdel%2Btrabajo&idNorma=207436" target="_blank" rel="noopener">Código del Trabajo ↗</a></section>
+      <footer>WORKLEDGER · LABOR CASEBOOK <span>v0.1.0 · Datos ficticios · Solo navegador</span></footer>
+    </main>
+  </div>
+  <dialog id="entry-dialog"><form method="dialog" id="entry-form"><div class="dialog-header"><div><div class="eyebrow">REGISTRO DE REMUNERACIÓN</div><h2>Añadir periodo</h2></div><button type="button" class="icon-button" data-close aria-label="Cerrar">×</button></div><label>Mes<input type="month" name="period" required></label><div class="form-row"><label>Bruto registrado (CLP)<input type="number" name="gross" min="0" required placeholder="1450000"></label><label>Líquido pagado (CLP)<input type="number" name="net" min="0" required placeholder="1160000"></label></div><label>Base del contrato (CLP)<input type="number" name="contract" min="0" placeholder="1450000"><small>Valor de referencia; valida que compare el mismo concepto.</small></label><label>Respaldo asociado<select name="doc" id="payment-doc"></select></label><label>Nota / procedencia<input name="note" maxlength="100" placeholder="Ej.: liquidación de sueldo recibida por correo"></label><div class="dialog-actions"><button type="button" class="button secondary" data-close>Cancelar</button><button class="button primary" type="submit">Guardar periodo</button></div></form></dialog>
+  <dialog id="doc-dialog"><form method="dialog" id="doc-form"><div class="dialog-header"><div><div class="eyebrow">DOCUMENTACIÓN</div><h2>Añadir antecedente</h2></div><button type="button" class="icon-button" data-close>×</button></div><label>Nombre descriptivo<input name="name" required maxlength="70" placeholder="Liquidación de sueldo · abril 2025"></label><div class="form-row"><label>Tipo<select name="type"><option>Liquidación</option><option>Contrato / anexo</option><option>Comprobante bancario</option><option>Correo / mensaje</option><option>Registro horario</option><option>Otro</option></select></label><label>Fecha<input type="date" name="date" required></label></div><label>Referencia o ubicación privada<input name="location" maxlength="100" placeholder="Ej.: carpeta local / folio"></label><p class="dialog-hint">La demo guarda solo metadatos. No adjuntes documentos personales en una instancia pública.</p><div class="dialog-actions"><button type="button" class="button secondary" data-close>Cancelar</button><button class="button primary" type="submit">Guardar antecedente</button></div></form></dialog>
+  <dialog id="event-dialog"><form method="dialog" id="event-form"><div class="dialog-header"><div><div class="eyebrow">CRONOLOGÍA</div><h2>Añadir evento</h2></div><button type="button" class="icon-button" data-close>×</button></div><label>Evento<input name="title" required maxlength="80" placeholder="Reunión con RR. HH."></label><div class="form-row"><label>Fecha<input type="date" name="date" required></label><label>Tipo<select name="type"><option>Pago</option><option>Contrato</option><option>Comunicación</option><option>Reclamo</option><option>Otro</option></select></label></div><label>Nota<textarea name="note" rows="3" maxlength="180" placeholder="Descripción breve y neutral"></textarea></label><div class="dialog-actions"><button type="button" class="button secondary" data-close>Cancelar</button><button class="button primary" type="submit">Guardar evento</button></div></form></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
